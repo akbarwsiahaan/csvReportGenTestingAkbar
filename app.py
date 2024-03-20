@@ -54,7 +54,7 @@ def chat(temperature, model_name):
     st.write("# Talk to CSV")
     # Add functionality for Page 1
     reset = st.sidebar.button("Reset")
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV here 👇:", type="csv")
+    uploaded_file = st.sidebar.file_uploader("Upload your CSV here:", type="csv")
     retriever, vectorstore = retriever_func(uploaded_file)
     llm = ChatOpenAI(model_name=model_name, temperature=temperature, streaming=True)
         
@@ -175,8 +175,11 @@ def summary(model_name, temperature, top_p):
             print(msg_initiate4["output"])
             msg_initiate5 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?"})
             print(msg_initiate5["output"])
+            msg_initiate6 = agent.invoke({"input": "Analyze factor from additional information, that might affect significant monthly changes on each store, and in which month?"})
+            print(msg_initiate6["output"])
 
-            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
+            # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
+            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"]]}
             df = pd.DataFrame(data)
             csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
 
@@ -197,7 +200,7 @@ def analyze(temperature, model_name):
     #st.write("This is Page 3")
     # Add functionality for Page 3
     reset = st.sidebar.button("Reset")
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV here 👇:", type="csv")
+    uploaded_file = st.sidebar.file_uploader("Upload your CSV here :", type="csv")
     #.write(uploaded_file.name)
     if uploaded_file is not None:
         with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
@@ -286,17 +289,16 @@ def main():
     increase_spinner_font()
     global user_api_key
     # #
-    # st.sidebar.write("---Made with ❤️---")
     # st.sidebar.write("---")
     if os.path.exists(".env") and os.environ.get("OPENAI_API_KEY") is not None:
         user_api_key = os.environ["OPENAI_API_KEY"]
-        st.success("API key loaded from .env", icon="🚀")
+        st.success("API key loaded from .env")
     else:
         user_api_key = st.sidebar.text_input(
-            label="#### Enter OpenAI API key 👇", placeholder="Paste your openAI API key, sk-", type="password", key="openai_api_key"
+            label="#### Enter OpenAI API key", placeholder="Paste your openAI API key, sk-", type="password", key="openai_api_key"
         )
         if user_api_key:
-            st.sidebar.success("API key loaded", icon="🚀")
+            st.sidebar.success("API key loaded")
 
     os.environ["OPENAI_API_KEY"] = user_api_key
 
@@ -327,7 +329,7 @@ def main():
         # "Analyze CSV",
     ]
     
-    #st.subheader("Select any generator👇")
+    #st.subheader("Select any generator")
     # Create a selectbox with the function names as options
     selected_function = st.selectbox("Select a functionality", functions)
     if selected_function == "home":
