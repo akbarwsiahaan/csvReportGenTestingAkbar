@@ -138,7 +138,7 @@ def summary(model_name, temperature, top_p):
 
             df = pd.read_csv(tmp_file_path)
             llm = ChatOpenAI(model=model_name, temperature=temperature)
-            agent = create_pandas_dataframe_agent(llm, df, agent_type="openai-tools", verbose=True)            
+            agent = create_pandas_dataframe_agent(llm, df, agent_type="openai-tools", verbose=True,handle_parsing_errors=True)            
 
         except:
             loader = CSVLoader(file_path=tmp_file_path, encoding="utf-8")
@@ -148,7 +148,7 @@ def summary(model_name, temperature, top_p):
 
             df = pd.read_csv(tmp_file_path)
             llm = ChatOpenAI(model=model_name, temperature=temperature)
-            agent = create_pandas_dataframe_agent(llm, df, agent_type="openai-tools", verbose=True)
+            agent = create_pandas_dataframe_agent(llm, df, agent_type="openai-tools", verbose=True,handle_parsing_errors=True)
 
         os.remove(tmp_file_path)
         gen_sum = st.button("Generate Summary")
