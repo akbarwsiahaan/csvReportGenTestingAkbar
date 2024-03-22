@@ -184,7 +184,7 @@ def summary(model_name, temperature, top_p):
                     (
                         "system",
                         """Use the following pieces of context to answer the question at the end.
-                          If you don't know the answer, just say that you don't know, don't try to make up an answer. Context: {context}. Explan what is CSV file?""",
+                          If you don't know the answer, just say that you don't know, don't try to make up an answer. Context: {context}. Explain what is this CSV file?""",
                     ),
                     MessagesPlaceholder(variable_name="history"),
                     ("human", "{input}"),
@@ -198,6 +198,7 @@ def summary(model_name, temperature, top_p):
                     store[session_id] = ChatMessageHistory()
                 return store[session_id]
 
+            contextt = vectorstore.similarity_search(prompt, k=6)
             context = "\n\n".join(doc.page_content for doc in contextt)
 
             with_message_history = RunnableWithMessageHistory(
@@ -210,11 +211,11 @@ def summary(model_name, temperature, top_p):
             for chunk in with_message_history.stream({"context": context, "input": prompt},config={"configurable": {"session_id": "abc123"}},):
                 text_chunk += chunk.content
 
-            print('ini text chunk --->')
+            print('*************************** ini text chunk ***************************')
             print(text_chunk)
 
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
-            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"]]}
+            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],text_chunk]}
             df = pd.DataFrame(data)
             csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
 
