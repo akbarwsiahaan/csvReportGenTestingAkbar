@@ -103,7 +103,7 @@ def summary(model_name, temperature, top_p):
             print(msg_initiate3["output"])
             msg_initiate4 = agent.invoke({"input": "Get and list all relevant information from information on month column. Tell me what information that you found"})
             print(msg_initiate4["output"])
-            msg_initiate5 = agent.invoke({"input": "Analyze factors from the additional information columns to identify potential reasons for significant monthly changes in sales and profit? Find unique values in the Information columns for each month. If you generate Python code to do the analysis, execute and find unique values, ignore ones without specific information but take all other relevant information, then identify factors from that additional information on each month column that might affect significant monthly changes on each store, and then extract the insights"})
+            msg_initiate5 = agent.invoke({"input": "Analyze factors from the additional information columns to identify potential reasons for significant monthly changes in sales and profit? If you generate Python code to do the analysis, execute and find the information, ignore ones without specific information but take all other relevant information. Then identify factors from that additional information on each month column that might affect significant monthly changes on each store, for example by comparing it to sales and profit, and suggest on the insights"})
             print(msg_initiate5["output"])
             # msg_initiate6 = agent.invoke({"input": "Is there any figure or information that doesn't seem right?"})
             # print(msg_initiate6["output"])
