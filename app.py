@@ -103,7 +103,7 @@ def summary(model_name, temperature, top_p):
             print(msg_initiate3["output"])
             msg_initiate4 = agent.invoke({"input": "Get and list all relevant information from information on month column. Tell me what information that you found"})
             print(msg_initiate4["output"])
-            msg_initiate5 = agent.invoke({"input": "Which information from information on month column, that might afffect sales or profit of stores? Then analyze how that information affected sales or profit of store in that month"})
+            msg_initiate5 = agent.invoke({"input": "Using previous information which you got from information on month column, that might afffect sales or profit of stores? Then analyze how that information affected sales or profit of store in that month"})
             print(msg_initiate5["output"])
             # msg_initiate6 = agent.invoke({"input": "Is there any figure or information that doesn't seem right?"})
             # print(msg_initiate6["output"])
