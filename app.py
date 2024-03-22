@@ -226,6 +226,41 @@ def analyze(temperature, model_name):
             msg_initiate5 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?", "chat_history": st.session_state.messages})
             print(msg_initiate5["output"])
 
+            llm = ChatOpenAI(model_name=model_name, temperature=temperature, streaming=True)
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        """Use the following pieces of context to answer the question at the end.
+                          If you don't know the answer, just say that you don't know, don't try to make up an answer. Context: {context}. Explan what is CSV file?""",
+                    ),
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{input}"),
+                ]
+            )
+
+            runnable = prompt | llm
+
+            def get_session_history(session_id: str) -> BaseChatMessageHistory:
+                    if session_id not in store:
+                    store[session_id] = ChatMessageHistory()
+                return store[session_id]
+
+            context = "\n\n".join(doc.page_content for doc in contextt)
+
+            with_message_history = RunnableWithMessageHistory(
+                runnable,
+                get_session_history,
+                input_messages_key="input",
+                history_messages_key="history",
+            )
+
+            for chunk in with_message_history.astream({"context": context, "input": prompt},config={"configurable": {"session_id": "abc123"}},):
+                text_chunk += chunk.content
+
+            print('ini text chunk --->')
+            print(text_chunk)
+
             data = {'column1': ["report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
             df = pd.DataFrame(data)
             csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
