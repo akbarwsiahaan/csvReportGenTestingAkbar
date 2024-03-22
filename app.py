@@ -99,17 +99,17 @@ def summary(model_name, temperature, top_p):
             print(msg_initiate1["output"])
             msg_initiate2 = agent.invoke({"input": "Which store have the highest sales?"})
             print(msg_initiate2["output"])
-            msg_initiate3 = agent.invoke({"input": "Which store have the highest sales in March?"})
+            msg_initiate3 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?"})
             print(msg_initiate3["output"])
-            msg_initiate4 = agent.invoke({"input": "Which store have the highest growth over time?"})
+            msg_initiate4 = agent.invoke({"input": "Get and list all relevant information from information on month column. Tell me what information that you found"})
             print(msg_initiate4["output"])
-            msg_initiate5 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?"})
+            msg_initiate5 = agent.invoke({"input": "Which information from information on month column, that might afffect sales or profit of stores? Then analyze how that information affected sales or profit of store in that month"})
             print(msg_initiate5["output"])
-            msg_initiate6 = agent.invoke({"input": "Analyze factor from additional information on month column, that might affect significant monthly changes on each store. For example how it relates to increase or decrease in monthly sales or profit? If you come up with python code to do such analysis, execute the code and let me know the result"})
-            print(msg_initiate6["output"])
+            # msg_initiate6 = agent.invoke({"input": "Is there any figure or information that doesn't seem right?"})
+            # print(msg_initiate6["output"])
 
-            # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
-            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],"End of report"]}
+            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
+            # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],"End of report"]}
             df = pd.DataFrame(data)
             csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
 
