@@ -178,6 +178,41 @@ def summary(model_name, temperature, top_p):
             msg_initiate6 = agent.invoke({"input": "Analyze factor from additional information on month column, that might affect significant monthly changes on each store. For example how it relates to increase or decrease in monthly sales or profit? If you come up with python code to do such analysis, execute the code and let me know the result"})
             print(msg_initiate6["output"])
 
+            llm = ChatOpenAI(model_name=model_name, temperature=temperature, streaming=True)
+            prompt = ChatPromptTemplate.from_messages(
+                [
+                    (
+                        "system",
+                        """Use the following pieces of context to answer the question at the end.
+                          If you don't know the answer, just say that you don't know, don't try to make up an answer. Context: {context}. Explan what is CSV file?""",
+                    ),
+                    MessagesPlaceholder(variable_name="history"),
+                    ("human", "{input}"),
+                ]
+            )
+
+            runnable = prompt | llm
+
+            def get_session_history(session_id: str) -> BaseChatMessageHistory:
+                    if session_id not in store:
+                    store[session_id] = ChatMessageHistory()
+                return store[session_id]
+
+            context = "\n\n".join(doc.page_content for doc in contextt)
+
+            with_message_history = RunnableWithMessageHistory(
+                runnable,
+                get_session_history,
+                input_messages_key="input",
+                history_messages_key="history",
+            )
+
+            for chunk in with_message_history.stream({"context": context, "input": prompt},config={"configurable": {"session_id": "abc123"}},):
+                text_chunk += chunk.content
+
+            print('ini text chunk --->')
+            print(text_chunk)
+
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
             data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"]]}
             df = pd.DataFrame(data)
@@ -255,7 +290,7 @@ def analyze(temperature, model_name):
                 history_messages_key="history",
             )
 
-            for chunk in with_message_history.astream({"context": context, "input": prompt},config={"configurable": {"session_id": "abc123"}},):
+            for chunk in with_message_history.stream({"context": context, "input": prompt},config={"configurable": {"session_id": "abc123"}},):
                 text_chunk += chunk.content
 
             print('ini text chunk --->')
