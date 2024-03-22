@@ -95,20 +95,21 @@ def summary(model_name, temperature, top_p):
             )
             result = chain({"input_documents": texts}, return_only_outputs=True)
 
-            msg_initiate1 = agent.invoke({"input": "What are the names of the stores?"})
-            print(msg_initiate1["output"])
-            msg_initiate2 = agent.invoke({"input": "Which store have the highest sales?"})
-            print(msg_initiate2["output"])
-            msg_initiate3 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?"})
-            print(msg_initiate3["output"])
-            msg_initiate4 = agent.invoke({"input": "Get and list all relevant information from information on month column. Tell me what information that you found"})
-            print(msg_initiate4["output"])
+            # msg_initiate1 = agent.invoke({"input": "What are the names of the stores?"})
+            # print(msg_initiate1["output"])
+            # msg_initiate2 = agent.invoke({"input": "Which store have the highest sales?"})
+            # print(msg_initiate2["output"])
+            # msg_initiate3 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?"})
+            # print(msg_initiate3["output"])
+            # msg_initiate4 = agent.invoke({"input": "Get and list all relevant information from information on month column. Tell me what information that you found"})
+            # print(msg_initiate4["output"])
             msg_initiate5 = agent.invoke({"input": "Analyze factors from the additional information columns to identify potential reasons for significant monthly changes in sales and profit? If you generate Python code to do the analysis, execute and find the information, ignore ones without specific information but take all other relevant information. Then identify factors from that additional information on each month column that might affect significant monthly changes on each store, for example by comparing it to sales and profit, and suggest on the insights"})
             print(msg_initiate5["output"])
             # msg_initiate6 = agent.invoke({"input": "Is there any figure or information that doesn't seem right?"})
             # print(msg_initiate6["output"])
 
-            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
+            data = {'column1': ["summary -->","report 1->","report 5->"], 'column2': [result["output_text"],msg_initiate5["output"]]}
+            # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],"End of report"]}
             df = pd.DataFrame(data)
             csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
