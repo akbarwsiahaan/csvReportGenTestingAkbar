@@ -175,7 +175,7 @@ def summary(model_name, temperature, top_p):
             print(msg_initiate4["output"])
             msg_initiate5 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?"})
             print(msg_initiate5["output"])
-            msg_initiate6 = agent.invoke({"input": "From information on month Columns, how it affect the sales of each store?"})
+            msg_initiate6 = agent.invoke({"input": "Analyze factor from additional information on month column, that might affect significant monthly changes on each store. For example how it relates to increase or decrease in monthly sales or profit? If you come up with python code to do such analysis, execute the code and let me know the result"})
             print(msg_initiate6["output"])
 
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
