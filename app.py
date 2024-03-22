@@ -194,8 +194,8 @@ def summary(model_name, temperature, top_p):
             runnable = prompt | llm
 
             def get_session_history(session_id: str) -> BaseChatMessageHistory:
-                    if session_id not in store:
-                        store[session_id] = ChatMessageHistory()
+                if session_id not in store:
+                    store[session_id] = ChatMessageHistory()
                 return store[session_id]
 
             contextt = vectorstore.similarity_search(prompt, k=6)
