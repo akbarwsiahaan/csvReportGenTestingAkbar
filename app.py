@@ -108,7 +108,7 @@ def summary(model_name, temperature, top_p):
             # msg_initiate6 = agent.invoke({"input": "Is there any figure or information that doesn't seem right?"})
             # print(msg_initiate6["output"])
 
-            data = {'column1': ["summary -->","report 1->","report 5->"], 'column2': [result["output_text"],msg_initiate5["output"]]}
+            data = {'column1': ["summary -->","report 5->"], 'column2': [result["output_text"],msg_initiate5["output"]]}
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],"End of report"]}
             df = pd.DataFrame(data)
