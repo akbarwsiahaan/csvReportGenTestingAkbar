@@ -50,76 +50,6 @@ def retriever_func(uploaded_file):
         st.stop()
     return retriever, vectorstore
 
-def chat(temperature, model_name):
-    st.write("# Talk to CSV")
-    # Add functionality for Page 1
-    reset = st.sidebar.button("Reset")
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV here:", type="csv")
-    retriever, vectorstore = retriever_func(uploaded_file)
-    llm = ChatOpenAI(model_name=model_name, temperature=temperature, streaming=True)
-        
-    def format_docs(docs):
-        return "\n\n".join(doc.page_content for doc in docs)
-    
-    if "messages" not in st.session_state:
-        st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
-
-    store = {}
-
-    prompt = ChatPromptTemplate.from_messages(
-        [
-            (
-                "system",
-                """Use the following pieces of context to answer the question at the end.
-                  If you don't know the answer, just say that you don't know, don't try to make up an answer. Context: {context}""",
-            ),
-            MessagesPlaceholder(variable_name="history"),
-            ("human", "{input}"),
-        ]
-    )
-    runnable = prompt | llm
-    
-    def get_session_history(session_id: str) -> BaseChatMessageHistory:
-        if session_id not in store:
-            store[session_id] = ChatMessageHistory()
-        return store[session_id]
-
-
-    with_message_history = RunnableWithMessageHistory(
-        runnable,
-        get_session_history,
-        input_messages_key="input",
-        history_messages_key="history",
-    )
-
-    for msg in st.session_state.messages:
-        st.chat_message(msg["role"]).write(msg["content"])
-    async def chat_message():
-        if prompt := st.chat_input():
-            if not user_api_key: 
-                st.info("Please add your OpenAI API key to continue.")
-                st.stop()
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            st.chat_message("user").write(prompt)
-            contextt = vectorstore.similarity_search(prompt, k=6)
-            context = "\n\n".join(doc.page_content for doc in contextt)
-            #msg = 
-            with st.chat_message("assistant"):
-                message_placeholder = st.empty()
-                text_chunk = ""
-                async for chunk in with_message_history.astream(
-                        {"context": context, "input": prompt},
-                        config={"configurable": {"session_id": "abc123"}},
-                    ):
-                    text_chunk += chunk.content
-                    message_placeholder.markdown(text_chunk)
-                    #st.chat_message("assistant").write(text_chunk)
-                st.session_state.messages.append({"role": "assistant", "content": text_chunk})
-        if reset:
-            st.session_state["messages"] = []
-    asyncio.run(chat_message())
-
-
 def summary(model_name, temperature, top_p):
     st.write("# Summary of CSV")
     st.write("Upload your document here:")
@@ -178,44 +108,8 @@ def summary(model_name, temperature, top_p):
             msg_initiate6 = agent.invoke({"input": "Analyze factor from additional information on month column, that might affect significant monthly changes on each store. For example how it relates to increase or decrease in monthly sales or profit? If you come up with python code to do such analysis, execute the code and let me know the result"})
             print(msg_initiate6["output"])
 
-            llm = ChatOpenAI(model_name=model_name, temperature=temperature, streaming=True)
-            prompt = ChatPromptTemplate.from_messages(
-                [
-                    (
-                        "system",
-                        """Use the following pieces of context to answer the question at the end.
-                          If you don't know the answer, just say that you don't know, don't try to make up an answer. Context: {context}. Explain what is this CSV file?""",
-                    ),
-                    MessagesPlaceholder(variable_name="history"),
-                    ("human", "{input}"),
-                ]
-            )
-
-            runnable = prompt | llm
-
-            def get_session_history(session_id: str) -> BaseChatMessageHistory:
-                if session_id not in store:
-                    store[session_id] = ChatMessageHistory()
-                return store[session_id]
-
-            contextt = vectorstore.similarity_search(prompt, k=6)
-            context = "\n\n".join(doc.page_content for doc in contextt)
-
-            with_message_history = RunnableWithMessageHistory(
-                runnable,
-                get_session_history,
-                input_messages_key="input",
-                history_messages_key="history",
-            )
-
-            for chunk in with_message_history.stream({"context": context, "input": prompt},config={"configurable": {"session_id": "abc123"}},):
-                text_chunk += chunk.content
-
-            print('*************************** ini text chunk ***************************')
-            print(text_chunk)
-
             # data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
-            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],text_chunk]}
+            data = {'column1': ["summary -->","report 1->", "report 2->", "report 3->", "report 4->","report 5->","report 6->","report 7->"], 'column2': [result["output_text"],msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"],msg_initiate6["output"],"End of report"]}
             df = pd.DataFrame(data)
             csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
 
@@ -225,71 +119,10 @@ def summary(model_name, temperature, top_p):
                  file_name='your_data.csv',
                  mime='text/csv',
             )
-                
                 
 
             st.success("Report generated - you can download the report with download button above")
 
-
-def analyze(temperature, model_name):
-    st.write("# Analyze CSV")
-    #st.write("This is Page 3")
-    # Add functionality for Page 3
-    reset = st.sidebar.button("Reset")
-    uploaded_file = st.sidebar.file_uploader("Upload your CSV here :", type="csv")
-    #.write(uploaded_file.name)
-    if uploaded_file is not None:
-        with tempfile.NamedTemporaryFile(delete=False) as tmp_file:
-            tmp_file.write(uploaded_file.getvalue())
-            tmp_file_path = tmp_file.name
-        df = pd.read_csv(tmp_file_path)
-        llm = ChatOpenAI(model=model_name, temperature=temperature)
-        agent = create_pandas_dataframe_agent(llm, df, agent_type="openai-tools", verbose=True)
-
-        if "messages" not in st.session_state:
-            st.session_state["messages"] = [{"role": "assistant", "content": "How can I help you?"}]
-
-        with st.spinner("Please wait, generating the report data..."):
-
-            msg_initiate1 = agent.invoke({"input": "What are the names of the stores?", "chat_history": st.session_state.messages})
-            print(msg_initiate1["output"])
-            msg_initiate2 = agent.invoke({"input": "Which store have the highst sales?", "chat_history": st.session_state.messages})
-            print(msg_initiate2["output"])
-            msg_initiate3 = agent.invoke({"input": "Which store have the highest sales in March?", "chat_history": st.session_state.messages})
-            print(msg_initiate3["output"])
-            msg_initiate4 = agent.invoke({"input": "Which store have the highest growth over time?", "chat_history": st.session_state.messages})
-            print(msg_initiate4["output"])
-            msg_initiate5 = agent.invoke({"input": "Which store have the most sudden or most significant spike in growth, and in which month?", "chat_history": st.session_state.messages})
-            print(msg_initiate5["output"])
-
-            data = {'column1': ["report 1->", "report 2->", "report 3->", "report 4->","report 5->"], 'column2': [msg_initiate1["output"], msg_initiate2["output"], msg_initiate3["output"],msg_initiate4["output"],msg_initiate5["output"]]}
-            df = pd.DataFrame(data)
-            csv_file = df.to_csv(index=False).encode('utf-8')  # Convert DataFrame to CSV
-
-            download = st.download_button(
-                 label="Download Data as CSV",
-                 data=csv_file,
-                 file_name='your_data.csv',
-                 mime='text/csv',
-            )
-            
-        for msg in st.session_state.messages:
-            st.chat_message(msg["role"]).write(msg["content"])
-
-        if prompt := st.chat_input(placeholder="What are the names of the columns?"):
-            if not user_api_key: 
-                st.info("Please add your OpenAI API key to continue.")
-                st.stop()
-            st.session_state.messages.append({"role": "user", "content": prompt})
-            st.chat_message("user").write(prompt)
-            msg = agent.invoke({"input": prompt, "chat_history": st.session_state.messages})
-            print(msg)
-            print('kalo ini outputnya doang')
-            print(msg["output"])
-            st.session_state.messages.append({"role": "assistant", "content": msg["output"]})
-            st.chat_message("assistant").write(msg["output"])
-        if reset:
-            st.session_state["messages"] = []
 
 def increase_spinner_font(font_size="1.2em"):  # Adjust font_size as needed
     """Injects custom CSS to potentially increase spinner font size."""
